@@ -9,6 +9,8 @@ namespace ECommerce.Models
         public int DepartamentsID { get; set; }
 
         [Required(ErrorMessage ="O campo Nome é requirido!!")]
+
+        [Display(Name = "Nome")]
         public string Name { get; set; }
 
         public virtual ICollection<City> Cities { get; set; }

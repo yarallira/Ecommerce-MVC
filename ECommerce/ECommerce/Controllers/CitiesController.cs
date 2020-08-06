@@ -39,7 +39,15 @@ namespace ECommerce.Controllers
         // GET: Cities/Create
         public ActionResult Create()
         {
-            ViewBag.DepartamentsID = new SelectList(db.Departaments, "DepartamentsID", "Name");
+            var dep = db.Departaments.ToList();
+            dep.Add(new Departaments {
+                DepartamentsID = 0,
+                Name = "Selecione um departamento"
+            });
+
+            dep = dep.OrderBy(d => d.Name).ToList();
+
+            ViewBag.DepartamentsID = new SelectList(dep, "DepartamentsID", "Name");
             return View();
         }
 
