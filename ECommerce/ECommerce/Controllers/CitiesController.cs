@@ -39,15 +39,7 @@ namespace ECommerce.Controllers
         // GET: Cities/Create
         public ActionResult Create()
         {
-            var dep = db.Departaments.ToList();
-            dep.Add(new Departaments {
-                DepartamentsID = 0,
-                Name = "Selecione um departamento"
-            });
-
-            dep = dep.OrderBy(d => d.Name).ToList();
-
-            ViewBag.DepartamentsID = new SelectList(dep, "DepartamentsID", "Name");
+            this.OrdenarDepartamentos();
             return View();
         }
 
@@ -61,12 +53,30 @@ namespace ECommerce.Controllers
             if (ModelState.IsValid)
             {
                 db.Cities.Add(city);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                   ex.InnerException.InnerException != null &&
+                   ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Não é possivel inserir duas cidades com o mesmo nome.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+                    this.OrdenarDepartamentos();
+                    return View(city);
+                }
             }
 
-            ViewBag.DepartamentsID = new SelectList(db.Departaments, "DepartamentsID", "Name", city.DepartamentsID);
-            return View(city);
+            this.OrdenarDepartamentos();
+            return View();
         }
 
         // GET: Cities/Edit/5
@@ -81,8 +91,9 @@ namespace ECommerce.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.DepartamentsID = new SelectList(db.Departaments, "DepartamentsID", "Name", city.DepartamentsID);
-            return View(city);
+
+            this.OrdenarDepartamentos();
+            return View();
         }
 
         // POST: Cities/Edit/5
@@ -95,10 +106,28 @@ namespace ECommerce.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(city).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                  ex.InnerException.InnerException != null &&
+                  ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Não é possivel inserir duas cidades com o mesmo nome.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+                    this.OrdenarDepartamentos();
+                    return View(city);
+                }
             }
-            ViewBag.DepartamentsID = new SelectList(db.Departaments, "DepartamentsID", "Name", city.DepartamentsID);
+            this.OrdenarDepartamentos();            
             return View(city);
         }
 
@@ -136,5 +165,21 @@ namespace ECommerce.Controllers
             }
             base.Dispose(disposing);
         }
+
+        public void OrdenarDepartamentos()
+        {
+            var dep = db.Departaments.ToList();
+            dep.Add(new Departaments
+            {
+                DepartamentsID = 0,
+                Name = "[ Selecione um departamento ]"
+            });
+
+            dep = dep.OrderBy(d => d.Name).ToList();
+
+            ViewBag.DepartamentsID = new SelectList(dep, "DepartamentsID", "Name");
+
+        }
     }
+ 
 }

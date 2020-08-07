@@ -4,9 +4,11 @@
     ViewBag.Title = "Delete";
 }
 
-<h2>Delete</h2>
+<h2>Excluir departamento</h2>
 
-<h3>Are you sure you want to delete this?</h3>
+@Html.ValidationSummary(true,"", new { @class = "text-danger" });
+
+<h3>Deseja realmente excluir o departamento?</h3>
 <div>
     <h4>Departaments</h4>
     <hr />
@@ -26,7 +28,7 @@
 
         <div class="form-actions no-color">
             <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
+            @Html.ActionLink("Voltar a lista", "Index")
         </div>
     }
 </div>
