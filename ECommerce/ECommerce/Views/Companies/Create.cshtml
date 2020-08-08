@@ -7,10 +7,10 @@
 <h2>Criar</h2>
 
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Companhia</h4>
         <hr />
@@ -77,4 +77,31 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#DepartamentsID").change(function () {
+                $("#CityID").empty();
+                $("#CityID").append('<option value="0">[Selecione  uma Cidade..]</option>');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetCities")',
+                    dataType: 'json',
+                    data: { DepartamentsID: $("#DepartamentsID").val() },
+                    success: function (data) {
+                        $.each(data, function (i, data) {
+                            $("#CityID").append('<option value="'
+                             + data.CityID + '">'
+                             + data.Name + '</option>');
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Falha ao buscar cidades.' + ex);
+                    }
+                });
+                return false;
+            })
+        });
+    </script>
+
 }

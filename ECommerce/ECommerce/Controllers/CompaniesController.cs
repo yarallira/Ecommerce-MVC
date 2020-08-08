@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ECommerce.Classes;
+using ECommerce.Models;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using ECommerce.Classes;
-using ECommerce.Models;
 
 namespace ECommerce.Controllers
 {
@@ -18,7 +15,7 @@ namespace ECommerce.Controllers
         // GET: Companies
         public ActionResult Index()
         {
-            var companies = db.Companies.Include(c => c.Cities).Include(c => c.Departaments);
+            IQueryable<Company> companies = db.Companies.Include(c => c.Cities).Include(c => c.Departaments);
             return View(companies.ToList());
         }
 
@@ -35,6 +32,15 @@ namespace ECommerce.Controllers
                 return HttpNotFound();
             }
             return View(company);
+        }
+
+        //CONTROLE DE LIST VIEW EM CASCATA
+
+        public JsonResult GetCities(int DepartamentsID)
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            var cities = db.Cities.Where(m => m.DepartamentsID == DepartamentsID);
+            return Json(cities);
         }
 
         // GET: Companies/Create
