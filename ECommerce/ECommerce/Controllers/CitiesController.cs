@@ -93,7 +93,7 @@ namespace ECommerce.Controllers
             }
 
             this.OrdenarDepartamentos();
-            return View();
+            return View(city);
         }
 
         // POST: Cities/Edit/5

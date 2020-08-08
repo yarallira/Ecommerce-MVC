@@ -22,5 +22,7 @@ namespace ECommerce.Models
         {
             modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
         }
+
+        public System.Data.Entity.DbSet<ECommerce.Models.Company> Companies { get; set; }
     }
 }
