@@ -93,7 +93,7 @@ namespace ECommerce.Controllers
                 return HttpNotFound();
             }
 
-            this.OrdenarDepartamentos();
+            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name", city.DepartamentsID);
             return View(city);
         }
 
@@ -105,10 +105,10 @@ namespace ECommerce.Controllers
         public ActionResult Edit([Bind(Include = "CityID,Name,DepartamentsID")] City city)
         {
             if (ModelState.IsValid)
-            {
-                db.Entry(city).State = EntityState.Modified;
+            {                
                 try
                 {
+                    db.Entry(city).State = EntityState.Modified;
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }

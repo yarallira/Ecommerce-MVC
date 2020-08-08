@@ -53,7 +53,10 @@
                 @Html.DisplayFor(modelItem => item.Address)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Logo)
+                @if (!string.IsNullOrEmpty(item.Logo))
+                {
+                    <img src="@Url.Content(item.Logo)" alt="Image" style="width:100px;height:150px;max-width: 100%; height: auto;" />
+                }
             </td>
             <td>
                 @Html.ActionLink("Editar", "Edit", new { id = item.CompanyID }, new { @class = "btn btn-warning" }) |

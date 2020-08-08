@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Web;
 
 namespace ECommerce.Models
 {
@@ -31,6 +32,9 @@ namespace ECommerce.Models
         [Display(Name = "Imagem")]
         [DataType(DataType.ImageUrl)]
         public string Logo { get; set; }
+
+        [NotMapped]
+        public HttpPostedFileBase LogoFile { get; set; }
 
         [Required(ErrorMessage = "O campo Departamento é requirido!!")]
         [Display(Name = "Departamento")]

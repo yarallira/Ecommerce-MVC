@@ -34,6 +34,8 @@ namespace ECommerce.Controllers
             return View(company);
         }
 
+        // UPLOADS DE IMAGENS 
+
         //CONTROLE DE LIST VIEW EM CASCATA
 
         public JsonResult GetCities(int DepartamentsID)
@@ -56,10 +58,20 @@ namespace ECommerce.Controllers
         // obter mais detalhes, consulte https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CompanyID,Name,Phone,Address,Logo,DepartamentsID,CityID")] Company company)
+        public ActionResult Create(Company company)
         {
             if (ModelState.IsValid)
             {
+                var pic = string.Empty;
+                var folder = "~/Content/Logos";
+
+                if (company.LogoFile != null)
+                {
+                    pic = FilesHelper.UploadPhoto(company.LogoFile, folder);
+                    pic = string.Format("{0}/{1}", folder, pic);
+                    company.Logo = pic;
+                }
+               
                 db.Companies.Add(company);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -92,10 +104,20 @@ namespace ECommerce.Controllers
         // obter mais detalhes, consulte https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CompanyID,Name,Phone,Address,Logo,DepartamentsID,CityID")] Company company)
+        public ActionResult Edit(Company company)
         {
             if (ModelState.IsValid)
             {
+                var pic = string.Empty;
+                var folder = "~/Content/Logos";
+
+                if (company.LogoFile != null)
+                {
+                    pic = FilesHelper.UploadPhoto(company.LogoFile, folder);
+                    pic = string.Format("{0}/{1}", folder, pic);
+                    company.Logo = pic;
+                }
+               
                 db.Entry(company).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
