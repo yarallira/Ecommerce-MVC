@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using ECommerce.Classes;
 using ECommerce.Models;
 
 namespace ECommerce.Controllers
@@ -167,17 +168,9 @@ namespace ECommerce.Controllers
         }
 
         public void OrdenarDepartamentos()
-        {
-            var dep = db.Departaments.ToList();
-            dep.Add(new Departaments
-            {
-                DepartamentsID = 0,
-                Name = "[ Selecione um departamento ]"
-            });
+        {      
 
-            dep = dep.OrderBy(d => d.Name).ToList();
-
-            ViewBag.DepartamentsID = new SelectList(dep, "DepartamentsID", "Name");
+            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name");
 
         }
     }

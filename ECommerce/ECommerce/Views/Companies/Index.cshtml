@@ -6,8 +6,10 @@
 
 <h2>Companhia</h2>
 
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
 <p>
-    @Html.ActionLink("Criar nova", "Create", new { }, new { @class="btn btn-primary"})
+    @Html.ActionLink("Criar nova", "Create", new { }, new { @class = "btn btn-primary" })
 </p>
 <table class="table">
     <tr>
@@ -32,32 +34,33 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Cities.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Departaments.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Phone)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Address)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Logo)
-        </td>
-        <td>
-            @Html.ActionLink("Editar", "Edit", new { id=item.CompanyID }, new { @class="btn btn-warning"}) |
-            @Html.ActionLink("Detalhes", "Details", new { id=item.CompanyID }, new {@class="btn btn-info" }) |
-            @Html.ActionLink("Excluir", "Delete", new { id=item.CompanyID }, new {@class = "btn btn-danger"})
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cities.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Departaments.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Logo)
+            </td>
+            <td>
+                @Html.ActionLink("Editar", "Edit", new { id = item.CompanyID }, new { @class = "btn btn-warning" }) |
+                @Html.ActionLink("Detalhes", "Details", new { id = item.CompanyID }, new { @class = "btn btn-info" }) |
+                @Html.ActionLink("Excluir", "Delete", new { id = item.CompanyID }, new { @class = "btn btn-danger" })
+            </td>
+        </tr>
+    }
 
 </table>
