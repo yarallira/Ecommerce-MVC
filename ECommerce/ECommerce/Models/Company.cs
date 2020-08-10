@@ -8,6 +8,7 @@ namespace ECommerce.Models
     public class Company
     {
         [Key]
+        [Display(Name = "Companhia Id")]
         public int CompanyID { get; set; }
 
         [Required(ErrorMessage = "O campo Nome é requirido!!")]
@@ -19,14 +20,12 @@ namespace ECommerce.Models
         [Required(ErrorMessage = "O campo Telefone é requirido!!")]
         [MaxLength(50, ErrorMessage = "Este campo somente aceita até 50 caracteres.")]
         [Display(Name = "Telefone")]
-        [Index("Company_Phone_Index", IsUnique = true)]
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
 
         [Required(ErrorMessage = "O campo Endereço é requirido!!")]
         [MaxLength(100, ErrorMessage = "Este campo somente aceita até 100 caracteres.")]
         [Display(Name = "Endereço")]
-        [Index("Company_Address_Index", IsUnique = true)]
         public string Adress { get; set; }
 
         [Display(Name = "Imagem")]

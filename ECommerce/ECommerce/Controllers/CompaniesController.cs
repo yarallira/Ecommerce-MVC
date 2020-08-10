@@ -1,5 +1,6 @@
 ﻿using ECommerce.Classes;
 using ECommerce.Models;
+using System;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
@@ -41,7 +42,7 @@ namespace ECommerce.Controllers
         public JsonResult GetCities(int DepartamentsID)
         {
             db.Configuration.ProxyCreationEnabled = false;
-            var cities = db.Cities.Where(m => m.DepartamentsID == DepartamentsID);
+            IQueryable<City> cities = db.Cities.Where(m => m.DepartamentsID == DepartamentsID);
             return Json(cities);
         }
 
@@ -61,26 +62,44 @@ namespace ECommerce.Controllers
         public ActionResult Create(Company company)
         {
             if (ModelState.IsValid)
-            {             
-                db.Companies.Add(company);
-                db.SaveChanges();
+            {
+                try
+                {
+                    db.Companies.Add(company);
+                    db.SaveChanges();
+                }
+                  catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                   ex.InnerException.InnerException != null &&
+                   ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Não é possivel inserir duas cidades com o mesmo nome.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+                    return View(company);
+                }
 
                 if (company.LogoFile != null)
                 {
-                    var pic = string.Empty;
-                    var folder = "~/Content/Logos";
-                    var file = string.Format("{0}.jpg", company.CompanyID);
+                    string pic = string.Empty;
+                    string folder = "~/Content/Logos";
+                    string file = string.Format("{0}.jpg", company.CompanyID);
 
-                    var response = FilesHelper.UploadPhoto(company.LogoFile, folder, file);
+                    bool response = FilesHelper.UploadPhoto(company.LogoFile, folder, file);
                     if (response)
                     {
                         pic = string.Format("{0}/{1}", folder, file);
                         company.Logo = pic;
-                        //db.Entry(company).State = EntityState.Modified;
-                        //db.SaveChanges();
-                    }                                   
+                        db.Entry(company).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
                 }
-                return RedirectToAction("Index");            
+
+                return RedirectToAction("Index");
             }
 
             ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name", company.CityID);
@@ -116,11 +135,11 @@ namespace ECommerce.Controllers
             {
                 if (company.LogoFile != null)
                 {
-                    var pic = string.Empty;
-                    var folder = "~/Content/Logos";
-                    var file = string.Format("{0}.jpg", company.CompanyID);
+                    string pic = string.Empty;
+                    string folder = "~/Content/Logos";
+                    string file = string.Format("{0}.jpg", company.CompanyID);
 
-                    var response = FilesHelper.UploadPhoto(company.LogoFile, folder, file);
+                    bool response = FilesHelper.UploadPhoto(company.LogoFile, folder, file);
                     if (response)
                     {
                         pic = string.Format("{0}/{1}", folder, file);

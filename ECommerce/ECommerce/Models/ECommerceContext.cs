@@ -15,6 +15,8 @@ namespace ECommerce.Models
 
         public System.Data.Entity.DbSet<ECommerce.Models.Departaments> Departaments { get; set; }
 
+        public System.Data.Entity.DbSet<ECommerce.Models.Company> Companies { get; set; }
+
 
         //DESABILITAR CASCATAS
 
@@ -23,6 +25,6 @@ namespace ECommerce.Models
             modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
         }
 
-        public System.Data.Entity.DbSet<ECommerce.Models.Company> Companies { get; set; }
+        
     }
 }
