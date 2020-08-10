@@ -27,7 +27,7 @@ namespace ECommerce.Models
         [MaxLength(100, ErrorMessage = "Este campo somente aceita até 100 caracteres.")]
         [Display(Name = "Endereço")]
         [Index("Company_Address_Index", IsUnique = true)]
-        public string Address { get; set; }
+        public string Adress { get; set; }
 
         [Display(Name = "Imagem")]
         [DataType(DataType.ImageUrl)]
