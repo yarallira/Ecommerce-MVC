@@ -31,6 +31,17 @@ namespace ECommerce.Classes
             return dep = dep.OrderBy(d => d.Name).ToList();
         }
 
+        public static List<Company> GetCompanys()
+        {
+            var comp = db.Companies.ToList();
+            comp.Add(new Company
+            {
+                CompanyID = 0,
+                Name = "[Selecione uma companhia]"
+            });
+            return comp = comp.OrderBy(d => d.Name).ToList();
+        }
+
         public void Dispose()
         {
             db.Dispose();
