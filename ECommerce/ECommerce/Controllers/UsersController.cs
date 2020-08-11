@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ECommerce.Classes;
+using ECommerce.Models;
+using System;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using ECommerce.Classes;
-using ECommerce.Models;
 
 namespace ECommerce.Controllers
 {
@@ -27,7 +25,7 @@ namespace ECommerce.Controllers
         // GET: Users
         public ActionResult Index()
         {
-            var users = db.Users.Include(u => u.Cities).Include(u => u.Company).Include(u => u.Departaments);
+            IQueryable<User> users = db.Users.Include(u => u.Cities).Include(u => u.Company).Include(u => u.Departaments);
             return View(users.ToList());
         }
 
@@ -60,7 +58,7 @@ namespace ECommerce.Controllers
         // obter mais detalhes, consulte https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create( User user)
+        public ActionResult Create(User user)
         {
             if (ModelState.IsValid)
             {
@@ -103,12 +101,12 @@ namespace ECommerce.Controllers
                     }
                 }
 
-                    return RedirectToAction("Index");
+                return RedirectToAction("Index");
             }
 
-            ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name");
-            ViewBag.CompanyID = new SelectList(CombosHelper.GetCompanys(), "CompanyID", "Name");
-            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name");
+            ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name", user.CityID);
+            ViewBag.CompanyID = new SelectList(CombosHelper.GetCompanys(), "CompanyID", "Name", user.CompanyID);
+            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name", user.DepartamentsID);
             return View(user);
         }
 
@@ -124,9 +122,9 @@ namespace ECommerce.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name");
-            ViewBag.CompanyID = new SelectList(CombosHelper.GetCompanys(), "CompanyID", "Name");
-            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name");
+            ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name", user.CityID);
+            ViewBag.CompanyID = new SelectList(CombosHelper.GetCompanys(), "CompanyID", "Name", user.CompanyID);
+            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name", user.DepartamentsID);
             return View(user);
         }
 
@@ -135,7 +133,7 @@ namespace ECommerce.Controllers
         // obter mais detalhes, consulte https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "UserID,UserName,FirstName,LastName,Phone,Adress,Photo,DepartamentsID,CityID,CompanyID")] User user)
+        public ActionResult Edit(User user)
         {
             if (ModelState.IsValid)
             {
@@ -156,13 +154,13 @@ namespace ECommerce.Controllers
                     }
                 }
 
-                    db.Entry(user).State = EntityState.Modified;
+                db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name");
-            ViewBag.CompanyID = new SelectList(CombosHelper.GetCompanys(), "CompanyID", "Name");
-            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name");
+            ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name", user.CityID);
+            ViewBag.CompanyID = new SelectList(CombosHelper.GetCompanys(), "CompanyID", "Name", user.CompanyID);
+            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name", user.DepartamentsID);
             return View(user);
         }
 

@@ -71,9 +71,15 @@
             @Html.DisplayFor(modelItem => item.Photo)
         </td>
         <td>
-            @Html.ActionLink("Editar", "Edit", new { id=item.UserID }, new { @class="btn btn-warning"}) |
-            @Html.ActionLink("Detalhes", "Details", new { id=item.UserID } ,new { @class="btn btn-info"}) |
-            @Html.ActionLink("Excluir", "Delete", new { id=item.UserID }, new { @class="btn btn-danger"})
+            @if (!string.IsNullOrEmpty(item.Photo))
+            {
+                <img src="@Url.Content(item.Photo)" alt="Image" style="width:60px;height:60px;max-width: 100%; height: auto;" />
+            }
+        </td>
+        <td>
+            @Html.ActionLink("Editar", "Edit", new { id = item.UserID }, new { @class = "btn btn-warning" }) |
+            @Html.ActionLink("Detalhes", "Details", new { id = item.UserID }, new { @class = "btn btn-info" }) |
+            @Html.ActionLink("Excluir", "Delete", new { id = item.UserID }, new { @class = "btn btn-danger" })
         </td>
     </tr>
 }
