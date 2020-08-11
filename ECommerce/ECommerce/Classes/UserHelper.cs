@@ -15,9 +15,41 @@ namespace ECommerce.Classes
             private static ApplicationDbContext userContext = new ApplicationDbContext();
             private static ECommerceContext db = new ECommerceContext();
 
+            // DELETAR USUÁRIOS
+            public static bool DeleteUser(string userName)
+            {
+                UserManager<ApplicationUser> userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+                var userASP = userManager.FindByEmail(userName);
+                if (userASP == null)
+                {
+                    return false;
+                }
+
+                var response = userManager.Delete(userASP);
+                return response.Succeeded;
+
+            }
+
+            //  ATUALIZAR USUÁRIOS
+            public static bool UpdateUserName(string currentUserName, string newUserName )
+            {
+                UserManager<ApplicationUser> userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+                var userASP = userManager.FindByEmail(currentUserName);
+                if (userASP == null)
+                {
+                    return false;
+                }
+
+                userASP.UserName = newUserName;
+                userASP.Email = newUserName;
+                var response = userManager.Update(userASP);
+                return response.Succeeded;
+
+            }
+
             public static void CheckRole(string roleName)
             {
-                var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(userContext));
+                RoleManager<IdentityRole> roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(userContext));
 
                 // Check to see if Role Exists, if not create it
                 if (!roleManager.RoleExists(roleName))
@@ -28,10 +60,10 @@ namespace ECommerce.Classes
 
             public static void CheckSuperUser()
             {
-                var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
-                var email = WebConfigurationManager.AppSettings["AdminUser"];
-                var password = WebConfigurationManager.AppSettings["AdminPassWord"];
-                var userASP = userManager.FindByName(email);
+                UserManager<ApplicationUser> userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+                string email = WebConfigurationManager.AppSettings["AdminUser"];
+                string password = WebConfigurationManager.AppSettings["AdminPassWord"];
+                ApplicationUser userASP = userManager.FindByName(email);
                 if (userASP == null)
                 {
                     CreateUserASP(email, "Admin", password);
@@ -42,9 +74,9 @@ namespace ECommerce.Classes
             }
             public static void CreateUserASP(string email, string roleName)
             {
-                var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+                UserManager<ApplicationUser> userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
 
-                var userASP = new ApplicationUser
+                ApplicationUser userASP = new ApplicationUser
                 {
                     Email = email,
                     UserName = email,
@@ -56,9 +88,9 @@ namespace ECommerce.Classes
 
             public static void CreateUserASP(string email, string roleName, string password)
             {
-                var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+                UserManager<ApplicationUser> userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
 
-                var userASP = new ApplicationUser
+                ApplicationUser userASP = new ApplicationUser
                 {
                     Email = email,
                     UserName = email,
@@ -70,21 +102,21 @@ namespace ECommerce.Classes
 
             public static async Task PasswordRecovery(string email)
             {
-                var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
-                var userASP = userManager.FindByEmail(email);
+                UserManager<ApplicationUser> userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+                ApplicationUser userASP = userManager.FindByEmail(email);
                 if (userASP == null)
                 {
                     return;
                 }
 
-                var user = db.Users.Where(tp => tp.UserName == email).FirstOrDefault();
+                User user = db.Users.Where(tp => tp.UserName == email).FirstOrDefault();
                 if (user == null)
                 {
                     return;
                 }
 
-                var random = new Random();
-                var newPassword = string.Format("{0}{1}{2:04}*",
+                Random random = new Random();
+                string newPassword = string.Format("{0}{1}{2:04}*",
                     user.FirstName.Trim().ToUpper().Substring(0, 1),
                     user.LastName.Trim().ToLower(),
                     random.Next(10000));
@@ -92,8 +124,8 @@ namespace ECommerce.Classes
                 userManager.RemovePassword(userASP.Id);
                 userManager.AddPassword(userASP.Id, newPassword);
 
-                var subject = "A senha foi modificada";
-                var body = string.Format(@"
+                string subject = "A senha foi modificada";
+                string body = string.Format(@"
                 <h1>A senha foi modificada</h1>
                 <p>Sua nova senha é: <strong>{0}</strong></p>
                 <p>Senha alterada com sucesso.",

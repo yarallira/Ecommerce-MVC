@@ -6,6 +6,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using static ECommerce.Classes.UserHelper;
 
 namespace ECommerce.Controllers
 {
@@ -68,6 +69,7 @@ namespace ECommerce.Controllers
                     {
                         db.Users.Add(user);
                         db.SaveChanges();
+                        UsersHelper.CreateUserASP(user.UserName, "User");
                     }
                     catch (Exception ex)
                     {
@@ -154,8 +156,15 @@ namespace ECommerce.Controllers
                     }
                 }
 
+                var db2 = new ECommerceContext();
+                var currentUser = db2.Users.Find(user.UserID);
+                if(currentUser.UserName != user.UserName)
+                {
+                    UsersHelper.UpdateUserName(currentUser.UserName, user.UserName);
+                }
+                db2.Dispose();
                 db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
+                db.SaveChanges();       
                 return RedirectToAction("Index");
             }
             ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name", user.CityID);
@@ -187,6 +196,7 @@ namespace ECommerce.Controllers
             User user = db.Users.Find(id);
             db.Users.Remove(user);
             db.SaveChanges();
+            UsersHelper.DeleteUser(user.UserName);
             return RedirectToAction("Index");
         }
 
