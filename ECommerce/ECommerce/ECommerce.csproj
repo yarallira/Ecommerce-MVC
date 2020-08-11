@@ -182,6 +182,8 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Classes\CombosHelper.cs" />
     <Compile Include="Classes\FilesHelper.cs" />
+    <Compile Include="Classes\MailHelper.cs" />
+    <Compile Include="Classes\UserHelper.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CitiesController.cs" />
     <Compile Include="Controllers\CompaniesController.cs" />
