@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using ECommerce.Classes;
 using ECommerce.Models;
 
 namespace ECommerce.Controllers
@@ -13,6 +14,15 @@ namespace ECommerce.Controllers
     public class UsersController : Controller
     {
         private ECommerceContext db = new ECommerceContext();
+
+        //CONTROLE DE LIST VIEW EM CASCATA
+
+        public JsonResult GetCities(int DepartamentsID)
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            IQueryable<City> cities = db.Cities.Where(m => m.DepartamentsID == DepartamentsID);
+            return Json(cities);
+        }
 
         // GET: Users
         public ActionResult Index()
@@ -39,9 +49,9 @@ namespace ECommerce.Controllers
         // GET: Users/Create
         public ActionResult Create()
         {
-            ViewBag.CityID = new SelectList(db.Cities, "CityID", "Name");
-            ViewBag.CompanyID = new SelectList(db.Companies, "CompanyID", "Name");
-            ViewBag.DepartamentsID = new SelectList(db.Departaments, "DepartamentsID", "Name");
+            ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name");
+            ViewBag.CompanyID = new SelectList(CombosHelper.GetCompanys(), "CompanyID", "Name");
+            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name");
             return View();
         }
 
@@ -50,18 +60,55 @@ namespace ECommerce.Controllers
         // obter mais detalhes, consulte https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "UserID,UserName,FirstName,LastName,Phone,Adress,Photo,DepartamentsID,CityID,CompanyID")] User user)
+        public ActionResult Create( User user)
         {
             if (ModelState.IsValid)
             {
-                db.Users.Add(user);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        db.Users.Add(user);
+                        db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.InnerException != null &&
+                       ex.InnerException.InnerException != null &&
+                       ex.InnerException.InnerException.Message.Contains("_Index"))
+                        {
+                            ModelState.AddModelError(string.Empty, "Não é possivel inserir duas cidades com o mesmo nome.");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, ex.Message);
+                        }
+                        return View(user);
+                    }
+
+                    if (user.PhotoFile != null)
+                    {
+                        string pic = string.Empty;
+                        string folder = "~/Content/Users";
+                        string file = string.Format("{0}.jpg", user.UserID);
+
+                        bool response = FilesHelper.UploadPhoto(user.PhotoFile, folder, file);
+                        if (response)
+                        {
+                            pic = string.Format("{0}/{1}", folder, file);
+                            user.Photo = pic;
+                            db.Entry(user).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
+                }
+
+                    return RedirectToAction("Index");
             }
 
-            ViewBag.CityID = new SelectList(db.Cities, "CityID", "Name", user.CityID);
-            ViewBag.CompanyID = new SelectList(db.Companies, "CompanyID", "Name", user.CompanyID);
-            ViewBag.DepartamentsID = new SelectList(db.Departaments, "DepartamentsID", "Name", user.DepartamentsID);
+            ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name");
+            ViewBag.CompanyID = new SelectList(CombosHelper.GetCompanys(), "CompanyID", "Name");
+            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name");
             return View(user);
         }
 
@@ -77,9 +124,9 @@ namespace ECommerce.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.CityID = new SelectList(db.Cities, "CityID", "Name", user.CityID);
-            ViewBag.CompanyID = new SelectList(db.Companies, "CompanyID", "Name", user.CompanyID);
-            ViewBag.DepartamentsID = new SelectList(db.Departaments, "DepartamentsID", "Name", user.DepartamentsID);
+            ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name");
+            ViewBag.CompanyID = new SelectList(CombosHelper.GetCompanys(), "CompanyID", "Name");
+            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name");
             return View(user);
         }
 
@@ -92,13 +139,30 @@ namespace ECommerce.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(user).State = EntityState.Modified;
+                if (ModelState.IsValid)
+                {
+                    if (user.PhotoFile != null)
+                    {
+                        string pic = string.Empty;
+                        string folder = "~/Content/Users";
+                        string file = string.Format("{0}.jpg", user.UserID);
+
+                        bool response = FilesHelper.UploadPhoto(user.PhotoFile, folder, file);
+                        if (response)
+                        {
+                            pic = string.Format("{0}/{1}", folder, file);
+                            user.Photo = pic;
+                        }
+                    }
+                }
+
+                    db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.CityID = new SelectList(db.Cities, "CityID", "Name", user.CityID);
-            ViewBag.CompanyID = new SelectList(db.Companies, "CompanyID", "Name", user.CompanyID);
-            ViewBag.DepartamentsID = new SelectList(db.Departaments, "DepartamentsID", "Name", user.DepartamentsID);
+            ViewBag.CityID = new SelectList(CombosHelper.GetCities(), "CityID", "Name");
+            ViewBag.CompanyID = new SelectList(CombosHelper.GetCompanys(), "CompanyID", "Name");
+            ViewBag.DepartamentsID = new SelectList(CombosHelper.GetDepartaments(), "DepartamentsID", "Name");
             return View(user);
         }
 

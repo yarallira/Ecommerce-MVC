@@ -4,18 +4,20 @@
     ViewBag.Title = "Edit";
 }
 
-<h2>Edit</h2>
+<h2>Editar</h2>
 
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("Edit", "Users", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
-        <h4>User</h4>
+        <h4>Usuários</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.UserID)
+        @Html.HiddenFor(model => model.Photo)
+
 
         <div class="form-group">
             @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -58,10 +60,11 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Photo, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.PhotoFile, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Photo, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Photo, "", new { @class = "text-danger" })
+                <span class="btn btn-default btn-file">
+                    @Html.TextBoxFor(modelo => modelo.PhotoFile, new { type = "file" })
+                </span>
             </div>
         </div>
 
@@ -103,4 +106,30 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#DepartamentsID").change(function () {
+                $("#CityID").empty();
+                $("#CityID").append('<option value="0">[Selecione  uma Cidade..]</option>');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetCities")',
+                    dataType: 'json',
+                    data: { DepartamentsID: $("#DepartamentsID").val() },
+                    success: function (data) {
+                        $.each(data, function (i, data) {
+                            $("#CityID").append('<option value="'
+                             + data.CityID + '">'
+                             + data.Name + '</option>');
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Falha ao buscar cidades.' + ex);
+                    }
+                });
+                return false;
+            })
+        });
+    </script>
 }
